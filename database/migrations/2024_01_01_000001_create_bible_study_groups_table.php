@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->foreignId('leader_id')->nullable()->constrained('members')->onDelete('set null');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
