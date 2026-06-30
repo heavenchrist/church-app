@@ -72,7 +72,14 @@ class UserForm
                     ->components([
                         Select::make('roles')
                             ->multiple()
-                            ->relationship('roles', 'name')
+                            ->relationship(
+                                'roles',
+                                'name',
+                                modifyQueryUsing: fn ($query) => $query->when(
+                                    ! auth()->user()?->hasRole('super_admin'),
+                                    fn ($q) => $q->where('name', '!=', 'super_admin'),
+                                ),
+                            )
                             ->preload()
                             ->searchable(),
                     ]),

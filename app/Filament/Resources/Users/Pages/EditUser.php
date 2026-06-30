@@ -17,4 +17,18 @@ class EditUser extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (! auth()->user()?->hasRole('super_admin')) {
+            $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->first();
+            if ($superAdminRole && isset($data['roles'])) {
+                $data['roles'] = array_values(
+                    array_filter($data['roles'], fn ($id) => (int) $id !== (int) $superAdminRole->id)
+                );
+            }
+        }
+
+        return $data;
+    }
 }

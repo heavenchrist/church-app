@@ -20,7 +20,14 @@ class RoleRelationManager extends RelationManager
             ->schema([
                 Select::make('name')
                     ->label('Role')
-                    ->required(),
+                    ->required()
+                    ->options(fn () => \Spatie\Permission\Models\Role::query()
+                        ->when(
+                            ! auth()->user()?->hasRole('super_admin'),
+                            fn ($q) => $q->where('name', '!=', 'super_admin'),
+                        )
+                        ->pluck('name', 'id')
+                    ),
             ]);
     }
 
@@ -33,6 +40,18 @@ class RoleRelationManager extends RelationManager
             ])
             ->filters([
                 //
+            ])
+            ->headerActions([
+                Tables\Actions\AttachAction::make()
+                    ->recordSelectOptionsQuery(fn ($query) => $query->when(
+                        ! auth()->user()?->hasRole('super_admin'),
+                        fn ($q) => $q->where('name', '!=', 'super_admin'),
+                    )),
+            ])
+            ->actions([
+                Tables\Actions\DetachAction::make()
+                    ->hidden(fn ($record) => $record->name === 'super_admin'
+                        && ! auth()->user()?->hasRole('super_admin')),
             ]);
     }
 }
