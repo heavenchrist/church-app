@@ -44,14 +44,14 @@ class RoleRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\AttachAction::make()
+                AttachAction::make()
                     ->recordSelectOptionsQuery(fn ($query) => $query->when(
                         ! auth()->user()?->hasRole('super_admin'),
                         fn ($q) => $q->where('name', '!=', 'super_admin'),
                     )),
             ])
             ->actions([
-                Tables\Actions\DetachAction::make()
+                DetachAction::make()
                     ->hidden(fn ($record) => $record->name === 'super_admin'
                         && ! auth()->user()?->hasRole('super_admin')),
             ]);
