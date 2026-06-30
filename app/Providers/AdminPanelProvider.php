@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->spa()
+            ->profile()
             ->globalSearch(false)
             ->colors([
                 'danger' => Color::Rose,
